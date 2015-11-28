@@ -2,27 +2,33 @@ import java.io.*;
 import java.util.*;
 
 public class NeuralNet{
+  public static int EPOCHS = 100;
 
   public static void main(String[] args) throws IOException, FileNotFoundException {
-    Scanner input = new Scanner(System.in);
+    Scanner in = new Scanner(System.in);
     Scanner initial, train;
     String output;
     boolean valid = false;
     //check for valid filename
-    initial = checkFile(input, 0);
-    train = checkFile(input, 1);
-    train.close();
+    initial = checkFile(in, 0);
+    train = checkFile(in, 1);
+
     System.out.print("Enter output filename: ");
-    output = input.next(); //create a file with this name
-    input.close();
+    output = in.next(); //create a file with this name
+    in.close();
     //initialize neural network with initial weights read from file
     Network network = readInitialFile(initial);
+
+    //read in training data
+    Example[] examples = readTrainingData(train);
+
+    backPropLearning(examples, network);
 
     printOutput(network, output);
 
   }
   //check for valid filename input
-  public static Scanner checkFile(Scanner input, int type) throws FileNotFoundException{
+  public static Scanner checkFile(Scanner in, int type) throws FileNotFoundException{
     //exit out for -1 or something
 
     String print;
@@ -38,7 +44,7 @@ public class NeuralNet{
     System.out.print(print);
     while(true){
       try{
-        Scanner sc = new Scanner(new File(input.next()));
+        Scanner sc = new Scanner(new File(in.next()));
         return sc;
       }
       catch(FileNotFoundException e){
@@ -64,7 +70,7 @@ public class NeuralNet{
       network.hiddenLayer[k] = new Node(ni+1);
       for(int i = 0; i < ni+1; i++){
         //read inputs from input layer to current hidden node
-        network.hiddenLayer[k].input[i] = sc.nextFloat();
+        network.hiddenLayer[k].inputWeight[i] = sc.nextFloat();
       }
     }
 
@@ -76,12 +82,65 @@ public class NeuralNet{
       network.outputLayer[k] = new Node(ni+1);
       for(int i = 0; i < nh+1; i++){
         //read inputs from input layer to current hidden node
-        network.outputLayer[k].input[i] = sc.nextFloat();
+        network.outputLayer[k].inputWeight[i] = sc.nextFloat();
       }
     }
     sc.close();
     return network;
   }
+
+  public static Example[] readTrainingData(Scanner sc){
+    int n = sc.nextInt();
+    int ni = sc.nextInt();
+    int no = sc.nextInt();
+    Example[] training = new Example[];
+    //loop through each training example
+    for(int k = 0; k < n; k++){
+      training[k] = new Node(ni, no);
+      //input nodes
+      for(int i = 0; i < ni; i++){
+        training[k].inputWeight[i] = train.nextFloat();
+      }
+      //output nodes
+      for(int i = 0; i < no; i++){
+        training[k].output[i] = train.nextFloat();
+      }
+    }
+
+    train.close();
+    return training;
+  }
+  public static void backPropLearning(Example[] examples, Network network){
+    //repeat for 100 epochs instead of stopping condition
+    for(int e = 0; e < EPOCHS; e++){
+      //iterate through examples; propogate forward to calculate output
+      for(int k = 0; k < examples.length; k++){
+        //copy inputs from first example to the inputLayer of Network
+        for(int i = 0; i < examples[k].inputWeight.length; i++){
+          network.inputLayer[i] = examples[k].inputWeight[i];
+        }
+        //for each hidden layer (only 1 hidden layer)
+        for(int l = 2; l < network.numLayers; l++){
+          //for each node in hidden layer
+          for(int j = 0; j < network.hiddenLayer.length; j++){
+            //sum weights and inputs from input layer to hidden layer
+            float inj = 0;
+            for(int i = 0; i < network.inputLayer.length; i++){
+              //generalize to multiple hidden layers
+              inj += network.inputLayer[i]*network.hiddenLayer[j].inputWeight[i];
+            }
+            network.hiddenLayer[j].setInput(inj);
+            //compute activation weight of jth hidden node in this layer
+            network.hiddenLayer[j].setActivation(activationFunction(inj));
+          }
+        }
+      }
+    }
+  }
+  public static float activationFunction(float in){
+
+  }
+
   //for trained neural network
   public static void printOutput(Network network, String output) throws IOException {
     PrintWriter pw = new PrintWriter(new FileWriter(output));
@@ -92,23 +151,25 @@ public class NeuralNet{
     //print weights from input to hidden layer (including bias weight)
     for(int k = 0; k < nh; k++){
         for(int i = 0; i < ni+1; i++){
-          pw.print(network.hiddenLayer[k].input[i] + " ");
+          pw.print(network.hiddenLayer[k].inputWeight[i] + " ");
         }
       pw.println();
     }
     //print weights from hidden layer to outputs (including bias weight)
     for(int k = 0; k < no; k++){
       for (int i = 0; i < nh+1; i++) {
-        pw.print(network.outputLayer[k].input[i] + " ");
+        pw.print(network.outputLayer[k].inputWeight[i] + " ");
       }
       pw.println();
     }
     pw.close();
   }
   private static class Network {
+    //arraylist
     Node[] inputLayer;
     Node[] hiddenLayer;
     Node[] outputLayer;
+    int numLayers = 3;
     public Network(int ni, int nh, int no){
       inputLayer = new Node[ni];
       hiddenLayer = new Node[nh];
@@ -118,9 +179,25 @@ public class NeuralNet{
 
   //for each
   private static class Node {
-    float[] input;
+    float[] inputWeight;
+    float activation = 0;
+    float input = 0;
     public Node(int numWeights){
       input = new float[numWeights];
+    }
+    public void setInput(float i){
+      input = i;
+    }
+    public void setActivation(float a){
+      activation = a;
+    }
+
+  }
+  private class Example extends Node{
+    float[] output;
+    public Example(int ni, int no){
+      super.input = new float[ni];
+      output = new float[no];
     }
   }
 }
