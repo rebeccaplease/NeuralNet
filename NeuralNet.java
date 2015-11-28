@@ -3,6 +3,8 @@ import java.util.*;
 
 public class NeuralNet{
   public static int EPOCHS = 100;
+  //learning rate
+  public static int ALPHA = 0.1;
 
   public static void main(String[] args) throws IOException, FileNotFoundException {
     Scanner in = new Scanner(System.in);
@@ -23,7 +25,7 @@ public class NeuralNet{
     Example[] examples = readTrainingData(train);
 
     network = backPropLearning(examples, network);
-    
+
     printOutput(network, output);
 
   }
@@ -65,24 +67,24 @@ public class NeuralNet{
     //read weights from inputs to hidden node
     for(int k = 0; k < nh; k++){
       // String w = sc.nextLine();
-      // float[] weights = Float.parseFloat(w.split(" "));
+      // double[] weights = double.parsedouble(w.split(" "));
       //instantiate new hidden node
       network.hiddenLayer[k] = new Node(ni+1);
       for(int i = 0; i < ni+1; i++){
         //read inputs from input layer to current hidden node
-        network.hiddenLayer[k].inputWeight[i] = sc.nextFloat();
+        network.hiddenLayer[k].inputWeight[i] = sc.nextdouble();
       }
     }
 
     //read weights from hidden node to output nodes
     for(int k = 0; k < no; k++){
       //String w = sc.nextLine();
-      //float[] weights = Float.parseFloat(w.split(" "));
+      //double[] weights = double.parsedouble(w.split(" "));
       //instantiate new hidden node
       network.outputLayer[k] = new Node(ni+1);
       for(int i = 0; i < nh+1; i++){
         //read inputs from input layer to current hidden node
-        network.outputLayer[k].inputWeight[i] = sc.nextFloat();
+        network.outputLayer[k].inputWeight[i] = sc.nextdouble();
       }
     }
     sc.close();
@@ -99,11 +101,11 @@ public class NeuralNet{
       training[k] = new Node(ni, no);
       //input nodes
       for(int i = 0; i < ni; i++){
-        training[k].inputWeight[i] = train.nextFloat();
+        training[k].inputWeight[i] = train.nextdouble();
       }
       //output nodes
       for(int i = 0; i < no; i++){
-        training[k].output[i] = train.nextFloat();
+        training[k].output[i] = train.nextdouble();
       }
     }
 
@@ -125,7 +127,7 @@ public class NeuralNet{
           //for each node in hidden layer
           for(int j = 0; j < network.hiddenLayer.length; j++){
             //sum weights and inputs from input layer to hidden layer
-            float inj = 0;
+            double inj = 0;
             for(int i = 0; i < network.inputLayer.length; i++){
               //generalize to multiple hidden layers
               inj += network.inputLayer[i]*network.hiddenLayer[j].inputWeight[i];
@@ -138,7 +140,7 @@ public class NeuralNet{
           //for each node in output layer
           for(int j = 0; j < network.outputLayer.length; j++){
             //sum weights and inputs from input layer to hidden layer
-            float inj = 0;
+            double inj = 0;
             for(int i = 0; i < network.hiddenLayer.length; i++){
               //generalize to multiple hidden layers
               inj += network.hiddenLayer[i]*network.outputLayer[j].inputWeight[i];
@@ -151,16 +153,16 @@ public class NeuralNet{
 
           //back propogate error
           //hidden layer to output layer
-          float[] deltaJ = new float[network.outputLayer.length];
+          double[] deltaJ = new double[network.outputLayer.length];
           for(int j = 0; j < network.outputLayer.length; j++){
             deltaJ[j] = derivActivationFunction(network.outputLayer[j].input)*
               (examples[j].output - examples[j].activation);
           }
 
-          float[] deltaI = new float[network.hiddenLayer.length];
+          double[] deltaI = new double[network.hiddenLayer.length];
           //input layer to hidden layer
           for(int i = 0; i < network.hiddenLayer.length; i++){
-            float err;
+            double err;
             for(int j = 0; j < network.outputLayer.length; j++){
               //loop through output layer error
               err += network.hiddenLayer[i].inputWeight[j]*deltaJ[j];
@@ -172,13 +174,13 @@ public class NeuralNet{
           //input to hidden layer
           for(int i = 0; i < network.hiddenLayer.length; i++){
             for(int j = 0; j < network.hiddenLayer[i].length; j++){
-              network.hiddenLayer[i].inputWeight[j] += deltaI[j];
+              network.hiddenLayer[i].inputWeight[j] += ALPHA*network.hiddenLayer[i].activation*deltaI[j];
             }
           }
           //hidden to output layer
           for(int i = 0; i < network.outputLayer.length; i++){
             for(int j = 0; j < network.outputLayer[i].length; j++){
-              network.outputLayer[i].inputWeight[j] += deltaJ[j];
+              network.outputLayer[i].inputWeight[j] += ALPHA*network.outputLayer[i].activation*deltaJ[j];
             }
           }
         //}
@@ -186,11 +188,14 @@ public class NeuralNet{
     }
     return network;
   }
-  public static float activationFunction(float in){
-    return 0;
+  //sigmoid function
+  public static double activationFunction(double x){
+    return 1/(1+exp(-x));
   }
-  public static float derivActivationFunction(float in){
-
+  public static double derivActivationFunction(double x){
+    double g = activationFunction(x);
+    return g*(1-g);
+      //g^' (x)= g(x)[1-g(x)]
   }
 
 
@@ -251,25 +256,25 @@ public class NeuralNet{
   // }
   //for each
   private static class Node {
-    float[] inputWeight;
-    float activation = 0;
-    float input = 0;
+    double[] inputWeight;
+    double activation = 0;
+    double input = 0;
     public Node(int numWeights){
-      input = new float[numWeights];
+      input = new double[numWeights];
     }
-    public void setInput(float i){
+    public void setInput(double i){
       input = i;
     }
-    public void setActivation(float a){
+    public void setActivation(double a){
       activation = a;
     }
 
   }
   private class Example extends Node{
-    float[] output;
+    double[] output;
     public Example(int ni, int no){
-      super.input = new float[ni];
-      output = new float[no];
+      super.input = new double[ni];
+      output = new double[no];
     }
   }
 }
