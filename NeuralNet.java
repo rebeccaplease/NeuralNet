@@ -22,8 +22,8 @@ public class NeuralNet{
     //read in training data
     Example[] examples = readTrainingData(train);
 
-    backPropLearning(examples, network);
-
+    network = backPropLearning(examples, network);
+    
     printOutput(network, output);
 
   }
@@ -110,7 +110,7 @@ public class NeuralNet{
     train.close();
     return training;
   }
-  public static void backPropLearning(Example[] examples, Network network){
+  public static Network backPropLearning(Example[] examples, Network network){
     //repeat for 100 epochs instead of stopping condition
     for(int e = 0; e < EPOCHS; e++){
       //iterate through examples; propogate forward to calculate output
@@ -120,7 +120,8 @@ public class NeuralNet{
           network.inputLayer[i] = examples[k].inputWeight[i];
         }
         //for each hidden layer (only 1 hidden layer)
-        for(int l = 2; l < network.numLayers; l++){
+        //for(int l = 2; l < network.numLayers; l++){
+
           //for each node in hidden layer
           for(int j = 0; j < network.hiddenLayer.length; j++){
             //sum weights and inputs from input layer to hidden layer
@@ -133,13 +134,65 @@ public class NeuralNet{
             //compute activation weight of jth hidden node in this layer
             network.hiddenLayer[j].setActivation(activationFunction(inj));
           }
-        }
+
+          //for each node in output layer
+          for(int j = 0; j < network.outputLayer.length; j++){
+            //sum weights and inputs from input layer to hidden layer
+            float inj = 0;
+            for(int i = 0; i < network.hiddenLayer.length; i++){
+              //generalize to multiple hidden layers
+              inj += network.hiddenLayer[i]*network.outputLayer[j].inputWeight[i];
+            }
+            network.outputLayer[j].setInput(inj);
+            //compute activation weight of jth hidden node in this layer
+            network.outputLayer[j].setActivation(activationFunction(inj));
+          }
+
+
+          //back propogate error
+          //hidden layer to output layer
+          float[] deltaJ = new float[network.outputLayer.length];
+          for(int j = 0; j < network.outputLayer.length; j++){
+            deltaJ[j] = derivActivationFunction(network.outputLayer[j].input)*
+              (examples[j].output - examples[j].activation);
+          }
+
+          float[] deltaI = new float[network.hiddenLayer.length];
+          //input layer to hidden layer
+          for(int i = 0; i < network.hiddenLayer.length; i++){
+            float err;
+            for(int j = 0; j < network.outputLayer.length; j++){
+              //loop through output layer error
+              err += network.hiddenLayer[i].inputWeight[j]*deltaJ[j];
+            }
+            deltaI[i] = network.hiddenlayer[i].input*err;
+          }
+
+          //update errors from deltaI and deltaJ
+          //input to hidden layer
+          for(int i = 0; i < network.hiddenLayer.length; i++){
+            for(int j = 0; j < network.hiddenLayer[i].length; j++){
+              network.hiddenLayer[i].inputWeight[j] += deltaI[j];
+            }
+          }
+          //hidden to output layer
+          for(int i = 0; i < network.outputLayer.length; i++){
+            for(int j = 0; j < network.outputLayer[i].length; j++){
+              network.outputLayer[i].inputWeight[j] += deltaJ[j];
+            }
+          }
+        //}
       }
     }
+    return network;
   }
   public static float activationFunction(float in){
+    return 0;
+  }
+  public static float derivActivationFunction(float in){
 
   }
+
 
   //for trained neural network
   public static void printOutput(Network network, String output) throws IOException {
@@ -176,7 +229,26 @@ public class NeuralNet{
       outputLayer = new Node[no];
     }
   }
-
+  // private static class Network {
+  //   //arraylist
+  //   ArrayList<Node[]> layers = new ArrayList<Node[]>();
+  //   int numLayers = 3;
+  //   public Network(int ni, HiddenLayers h, int no){
+  //     layers.add(new Node[ni]); //inputLayer
+  //     //hidden layer(s)
+  //     for(k = 0; k < h.nodes.length; k++){
+  //       hiddenLayer = new Node[nh];
+  //       layers.add(new Node[h.])
+  //     }
+  //
+  //     layers.add(new Node[no]); //outputLayer
+  //   }
+  // }
+  // private static class HiddenLayers{
+  //   int[] nodes;
+  //   public HiddenLayers(int[] )
+  //
+  // }
   //for each
   private static class Node {
     float[] inputWeight;
