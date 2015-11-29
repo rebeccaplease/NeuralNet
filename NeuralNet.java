@@ -3,7 +3,7 @@ import java.util.*;
 //import src.*;
 
 public class NeuralNet{
-   public static int EPOCHS = 1;
+   public static int EPOCHS = 100;
   //learning rate
    public static double ALPHA = 0.1;
 
@@ -18,17 +18,20 @@ public class NeuralNet{
       System.out.print("Enter output filename: ");
       output = in.next(); //create a file with this name
       in.close();*/
-      initial = new Scanner(new File("files/sample.NNWDBC.init.txt"));
-      train = new Scanner(new File("files/mini/wdbc.mini_train.txt"));
       
-      output = "output.txt";
+      initial = new Scanner(new File("files/sample.NNWDBC.init.txt"));
+      //train = new Scanner(new File("files/mini/wdbc.mini_train.txt"));
+      train = new Scanner(new File("files/wdbc.train.txt"));
+      
+      output = "outputTrain.txt";
+      //output = "outputMiniTrain.txt";
     //initialize neural network with initial weights read from file
       Network network = readInitialFile(initial);
    
     //read in training data
       Node[] examples = readTrainingData(train);
    
-      network = backPropLearning(examples, network);
+      backPropLearning(examples, network);
    
       printOutput(network, output);
    
@@ -121,20 +124,21 @@ public class NeuralNet{
       sc.close();
       return training;
    }
-   public static Network backPropLearning(Node[] examples, Network network){
+   public static void backPropLearning(Node[] examples, Network network){
     //repeat for 100 epochs instead of stopping condition
       for(int e = 0; e < EPOCHS; e++){
       //iterate through examples; propogate forward to calculate output
          for(int k = 0; k < examples.length; k++){
          //copy inputs from first example to the inputLayer of Network
-            for(int i = 0; i < examples[k].inputWeight.length; i++){
+            for(int i = 0; i < examples[k].inputWeight.length+1; i++){
                if(i == 0) {
                   network.inputLayer[0].output = -1;
                   network.hiddenLayer[0].output = -1;
                }
                else{
                //input for examples (not inputWeight)
-                  network.inputLayer[i].output = examples[k].inputWeight[i];
+               //0 to inputWeight.length for inputWeight 
+                  network.inputLayer[i].output = examples[k].inputWeight[i-1];
                }
             }
          //for each hidden layer (only 1 hidden layer)
@@ -186,6 +190,7 @@ public class NeuralNet{
           //input layer to hidden layer
           //for each node in the hidden layer
             for(int i = 1; i < network.hiddenLayer.length; i++){
+               //double err[] = new double[network.outputLayer.length];
                double err = 0;
                for(int j = 0; j < network.outputLayer.length; j++){
                //loop through output layer error
@@ -215,8 +220,10 @@ public class NeuralNet{
                }
             }
           //input to hidden layer
+          //loop through hidden nodes
             for(int i = 1; i < network.hiddenLayer.length; i++){
                //network.hiddenLayer[i].inputWeight[0] += ALPHA*(-1)*
+               //loop through each output
                for(int j = 0; j < network.inputLayer.length; j++){
                   network.hiddenLayer[i].inputWeight[j] += ALPHA*network.inputLayer[j].output*deltaI[i];
                }
@@ -225,7 +232,7 @@ public class NeuralNet{
          //}
          }
       }
-      return network;
+      //return network;
    }
   //sigmoid function
    public static double activationFunction(double x){
