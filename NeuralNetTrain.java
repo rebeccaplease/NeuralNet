@@ -7,127 +7,43 @@ public class NeuralNetTrain{
    public static double ALPHA = 0.1;
 
    public static void main(String[] args) throws IOException, FileNotFoundException {
-      //Scanner in = new Scanner(System.in);
+      Scanner in = new Scanner(System.in);
 
       Scanner initial, train;
       String output;
       boolean valid = false;
     //check for valid filename
-      /*initial = checkFile(in, 0);
-      train = checkFile(in, 1);
+      System.out.println("Neural Network Training Program");
+      initial = ScannerMethods.checkFile(in, 0);
+      train = ScannerMethods.checkFile(in, 1);
       System.out.print("Enter output filename: ");
       output = in.next(); //create a file with this name
-      in.close();*/
+      in.close();
 
-      initial = new Scanner(new File("files/sample.NNWDBC.init.txt"));
+      //initial = new Scanner(new File("files/sample.NNWDBC.init.txt"));
       //mini file
       //train = new Scanner(new File("files/mini/wdbc.mini_train.txt"));
       //output = "outputMiniTrain.txt";
 
       //full file
-      train = new Scanner(new File("files/wdbc.train.txt"));
-      output = "outputTrain.txt";
+     // train = new Scanner(new File("files/wdbc.train.txt"));
+      //output = "outputTrain.txt";
     //initialize neural network with initial weights read from file
-      Network network = readInitialFile(initial);
+      Network network = ScannerMethods.readWeights(initial);
 
     //read in training data
-      Node[] examples = readTrainingData(train);
+      Node[] examples = ScannerMethods.readExampleData(train);
       //System.out.println(examples.length);
       /*for (Node ex : examples){
         System.out.println(ex);
       }*/
       backPropLearning(examples, network);
 
-      printOutput(network, output);
+      printTrainedNetwork(network, output);
 
    }
-  //check for valid filename input
-   public static Scanner checkFile(Scanner in, int type) throws FileNotFoundException{
-    //exit out for -1 or something
 
-      String print;
-      switch(type){
-         case 0: print = "Enter initial neural network filename: ";
-            break;
-         case 1: print = "Enter training set filename: ";
-            break;
-         default: print = "argument error";
-            break;
-      }
-
-      System.out.print(print);
-      while(true){
-         try{
-            Scanner sc = new Scanner(new File(in.next()));
-            return sc;
-         }
-         catch(FileNotFoundException e){
-            System.out.println("File Not Found :(");
-            System.out.println(print);
-         }
-      }
-   }
-   public static Network readInitialFile(Scanner sc) throws FileNotFoundException{
-
-    //input nodes
-      int ni = sc.nextInt();
-    //hidden nodes
-      int nh = sc.nextInt();
-    //output nodes
-      int no = sc.nextInt();
-      //+1 for initial and hidden for bias
-      Network network = new Network(ni+1, nh+1, no);
-    //read weights from inputs to hidden node
-      for(int k = 0; k < nh+1; k++){
-        
-      //instantiate new hidden node
-         network.hiddenLayer[k] = new Node(ni+1);
-         for(int i = 0; i < ni+1; i++){
-         //read inputs from input layer to current hidden node
-            if(k > 0){
-               network.hiddenLayer[k].inputWeight[i] = sc.nextDouble();
-            }
-             //initialize input layer
-            if(k==0 && i < ni+1){
-               network.inputLayer[i] = new Node();
-            }
-         }
-      }
-
-    //read weights from hidden node to output nodes
-      for(int k = 0; k < no; k++){
-      //instantiate new output node
-         network.outputLayer[k] = new Node(nh+1);
-         for(int i = 0; i < nh+1; i++){
-         //read inputs from input layer to current hidden node
-            network.outputLayer[k].inputWeight[i] = sc.nextDouble();
-         }
-      }
-      sc.close();
-      return network;
-   }
-
-   public static Node[] readTrainingData(Scanner sc){
-      int n = sc.nextInt();
-      int ni = sc.nextInt();
-      int no = sc.nextInt();
-      Node[] training = new Node[n];
-    //loop through each training example
-      for(int k = 0; k < n; k++){
-         training[k] = new Node(ni, no);
-      //input nodes
-         for(int i = 0; i < ni; i++){
-            training[k].inputWeight[i] = sc.nextDouble();
-         }
-      //output nodes
-         for(int i = 0; i < no; i++){
-            training[k].output = sc.nextDouble();
-         }
-      }
-
-      sc.close();
-      return training;
-   }
+   
    public static void backPropLearning(Node[] examples, Network network){
     //repeat for 100 epochs instead of stopping condition
       for(int e = 0; e < EPOCHS; e++){
@@ -274,7 +190,7 @@ public class NeuralNetTrain{
 
 
   //for trained neural network
-   public static void printOutput(Network network, String output) throws IOException {
+   public static void printTrainedNetwork(Network network, String output) throws IOException {
       PrintWriter pw = new PrintWriter(new FileWriter(output));
       int ni = network.inputLayer.length;
       int nh = network.hiddenLayer.length;
