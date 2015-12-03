@@ -1,14 +1,14 @@
 import java.io.*;
 import java.util.*;
-//import src.*;
 
-public class NeuralNet{
+public class NeuralNetTrain{
    public static int EPOCHS = 100;
   //learning rate
    public static double ALPHA = 0.1;
 
    public static void main(String[] args) throws IOException, FileNotFoundException {
       //Scanner in = new Scanner(System.in);
+
       Scanner initial, train;
       String output;
       boolean valid = false;
