@@ -4,7 +4,7 @@ import java.util.*;
 public class NeuralNetTrain{
    public static int EPOCHS = 100;
   //learning rate
-   public static double ALPHA = 0.1;
+   public static double ALPHA = 0.05;
 
    public static void main(String[] args) throws IOException, FileNotFoundException {
       Scanner in = new Scanner(System.in);
@@ -32,7 +32,7 @@ public class NeuralNetTrain{
       Network network = ScannerMethods.readWeights(initial);
 
     //read in training data
-      Node[] examples = ScannerMethods.readExampleData(train);
+      Example[] examples = ScannerMethods.readExampleData(train);
       //System.out.println(examples.length);
       /*for (Node ex : examples){
         System.out.println(ex);
@@ -44,13 +44,13 @@ public class NeuralNetTrain{
    }
 
    
-   public static void backPropLearning(Node[] examples, Network network){
+   public static void backPropLearning(Example[] examples, Network network){
     //repeat for 100 epochs instead of stopping condition
       for(int e = 0; e < EPOCHS; e++){
       //iterate through examples; propogate forward to calculate output
          for(int k = 0; k < examples.length; k++){
          //copy inputs from first example to the inputLayer of Network
-            for(int i = 0; i < examples[k].inputWeight.length+1; i++){
+            for(int i = 0; i < examples[k].input.length+1; i++){
                if(i == 0) {
                   network.inputLayer[0].output = -1;
                   network.hiddenLayer[0].output = -1;
@@ -58,7 +58,7 @@ public class NeuralNetTrain{
                else{
                //input for examples (not inputWeight)
                //0 to inputWeight.length for inputWeight
-                  network.inputLayer[i].output = examples[k].inputWeight[i-1];
+                  network.inputLayer[i].output = examples[k].input[i-1];
                }
             }
          //for each hidden layer (only 1 hidden layer)
@@ -123,41 +123,44 @@ public class NeuralNetTrain{
             //for each node in the output layer
             for(int j = 0; j < network.outputLayer.length; j++) {
                deltaJ[j] = derivActivationFunction(network.outputLayer[j].input)*
-                  (examples[k].output - network.outputLayer[j].output);
+                  (examples[k].output[j] - network.outputLayer[j].output);
+                  //****output[j]
                   // if(e == 0 && k == 0)
                   //   System.out.println("deltaJ: " + deltaJ[j]);
             }
 
             double[] deltaI = new double[network.hiddenLayer.length];
-          // //input layer to hidden layer
-          // //for each node in the hidden layer
-          //   for(int i = 1; i < network.hiddenLayer.length; i++){
-          //      
-          //      double err = 0;
-          //      for(int j = 0; j < network.outputLayer.length; j++){
-          //      //loop through output layer error
-          //         err += network.hiddenLayer[i].inputWeight[j]*deltaJ[j];
-          //      
-          //      }
-          //      deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
-          //      // if(e == 0 && k == 0)
-          //      //      System.out.println("deltaI: " + deltaI[i]);
-          //   }
-
-            //hidden node error distribution
-            for(int j = 0; j < network.outputLayer.length; j++){
+          //input layer to hidden layer
+          //for each node in the hidden layer
+            for(int i = 1; i < network.hiddenLayer.length; i++){
                double err = 0;
-               for(int i = 1; i < network.hiddenLayer.length; i++){
+               for(int j = 0; j < network.outputLayer.length; j++){
                //loop through output layer error
-                  err = network.outputLayer[j].inputWeight[i]*deltaJ[j];
-                  deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
-                }
+                  err += network.outputLayer[j].inputWeight[i]*deltaJ[j];
+               }
+               deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
+               // if(e == 0 && k == 0)
+               //      System.out.println("deltaI: " + deltaI[i]);
             }
+
+            // //hidden node error distribution
+            // for(int j = 0; j < network.outputLayer.length; j++){
+            //    double err = 0;
+            //    for(int i = 1; i < network.hiddenLayer.length; i++){
+            //    //loop through output layer error
+
+            //       err = network.outputLayer[j].inputWeight[i]*deltaJ[j];
+
+            //       deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
+            //     }
+
+                
+            // }
 
 
           //update errors from deltaI and deltaJ for every weight
           //hidden to output layer
-          //loop through output layers
+          //loop through output nodes
             for(int i = 0; i < network.outputLayer.length; i++){
             //loop through hidden layer outputs (activation)
                for(int j = 0; j < network.hiddenLayer.length; j++){

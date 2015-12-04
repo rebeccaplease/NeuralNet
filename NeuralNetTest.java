@@ -19,28 +19,28 @@ public class NeuralNetTest{
 		// in.close();
 
 		//full file
-		trained = new Scanner(new File("outputTrain.txt"));
-		test = new Scanner(new File("files/wdbc.test.txt"));
+		trained = new Scanner(new File("outputGrades.txt"));
+		test = new Scanner(new File("files/grades/grades.test.txt"));
 
 
-		output = "result.txt";
+		output = "resultGrades.txt";
         //read trained weights
 		Network network = ScannerMethods.readWeights(trained);
 
     	//read in test data
-		Node[] examples = ScannerMethods.readExampleData(test);
+		Example[] examples = ScannerMethods.readExampleData(test);
 
 		Metric[] metrics = testing(examples, network);
 
 		printResults(metrics, network, output);
 	}
 
-	public static Metric[] testing(Node[] examples, Network network){
+	public static Metric[] testing(Example[] examples, Network network){
 		Metric[] metrics = new Metric[network.outputLayer.length];
       //iterate through examples; propogate forward to calculate output
 		for(int k = 0; k < examples.length; k++){
          //copy inputs from first example to the inputLayer of Network
-			for(int i = 0; i < examples[k].inputWeight.length+1; i++){
+			for(int i = 0; i < examples[k].input.length+1; i++){
 				if(i == 0) {
 					network.inputLayer[0].output = -1;
 					network.hiddenLayer[0].output = -1;
@@ -48,7 +48,7 @@ public class NeuralNetTest{
 				else{
                //input for examples (not inputWeight)
                //0 to inputWeight.length for inputWeight
-					network.inputLayer[i].output = examples[k].inputWeight[i-1];
+					network.inputLayer[i].output = examples[k].input[i-1];
 				}
 			}
          //for each hidden layer (only 1 hidden layer)
@@ -96,7 +96,7 @@ public class NeuralNetTest{
 				}
 				int predicted = (int) Math.round(network.outputLayer[j].output);
 
-				int expected = (int) examples[k].output;
+				int expected = (int) examples[k].output[j];
 				if(predicted == 1 && expected == 1)
 					metrics[j].a += 1;
 				else if(predicted == 1 && expected == 0)
@@ -134,6 +134,7 @@ public class NeuralNetTest{
 			pw.print(metrics[i].abcd());
 
 			pw.print(metrics[i].values());
+			pw.printf("%n");
 
 			aTotal += metrics[i].a;
 			bTotal += metrics[i].b;
@@ -148,6 +149,7 @@ public class NeuralNetTest{
 		Metric micro = new Metric(aTotal,bTotal,cTotal,dTotal);
 		micro.calculate();
 		pw.print(micro.values());
+		pw.printf("%n");
 
 
       //macroaveraged metrics overallAccuracy Precision Recall F1 (every class/category weighed equally)

@@ -1,7 +1,6 @@
 public class Node {
    double[] inputWeight;
-   double output;
-   //double output = 0;
+   double output; //activation 
    double input = 0;
    public Node (){
 

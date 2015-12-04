@@ -31,11 +31,12 @@ public class Metric {
 		f1 = (2*precision*recall)/(precision+recall);
 	}
 	public String abcd(){
-		return a + " " + b + " " + c + " " + d + " ";
+		String s = String.format("%.0f %.0f %.0f %.0f ", a,b,c,d);
+		return s;
 	}
 	public String values(){
 		String s = String.format("%.3f %.3f %.3f %.3f ", overallAccuracy, precision, recall, f1);
-		System.out.println(s);
+		//System.out.println(s);
 		return s;
 	}
 

@@ -28,7 +28,7 @@ public class ScannerMethods{
          }
          catch(FileNotFoundException e){
             System.out.println("File Not Found :(");
-            System.out.println(print);
+            System.out.print(print);
          }
       }
    }
@@ -72,21 +72,21 @@ public class ScannerMethods{
       return network;
    }
 
-   public static Node[] readExampleData(Scanner sc){
+   public static Example[] readExampleData(Scanner sc){
       int n = sc.nextInt();
       int ni = sc.nextInt();
       int no = sc.nextInt();
-      Node[] training = new Node[n];
+      Example[] training = new Example[n];
     //loop through each training example
       for(int k = 0; k < n; k++){
-         training[k] = new Node(ni, no);
+         training[k] = new Example(ni, no);
       //input nodes
          for(int i = 0; i < ni; i++){
-            training[k].inputWeight[i] = sc.nextDouble();
+            training[k].input[i] = sc.nextDouble();
          }
       //output nodes
          for(int i = 0; i < no; i++){
-            training[k].output = sc.nextDouble();
+            training[k].output[i] = sc.nextDouble();
          }
       }
 
