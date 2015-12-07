@@ -6,18 +6,21 @@ public class NeuralNetTest{
 	public static void main(String[] args) throws IOException, FileNotFoundException {
 
 		Scanner in = new Scanner(System.in);
-
+		System.out.println("Neural Network Testing Program");
 		Scanner trained, test;
 		String output;
 		boolean valid = false;
 
+		System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
+		int choice = in.nextInt();
 		//check for valid filename
-		System.out.println("Neural Network Testing Program");
-		trained = ScannerMethods.checkFile(in, 2);
-		test = ScannerMethods.checkFile(in, 3);
-		System.out.print("Enter output filename: ");
-		output = in.next(); //create a file with this name
-		in.close();
+		if(choice == 1){
+			trained = ScannerMethods.checkFile(in, 2);
+			test = ScannerMethods.checkFile(in, 3);
+			System.out.print("Enter output filename: ");
+			output = in.next(); //create a file with this name
+			in.close();
+		}
 
 		//full file
 		//trained = new Scanner(new File("outputGrades.txt"));
@@ -30,15 +33,19 @@ public class NeuralNetTest{
 		// output = "outputGrades.txt";
 
 		//dataset
-		// System.out.print("Enter learning rate: ");
-		// double alpha = in.nextDouble();
-		//
-		// System.out.print("Enter number of epochs: ");
-		// int epochs = in.nextInt();
-		// in.close();
-		// trained = new Scanner(new File("files/dataset/results/trainedDataset"+alpha+"_"+epochs+".txt"));
-		// test = new Scanner(new File("files/dataset/testSet.txt"));
-		// output = "files/dataset/results/outputDataset"+alpha+"_"+epochs+".txt";
+		else{
+			System.out.print("Enter number of hidden layers: ");
+			int nh = in.nextInt();
+			System.out.print("Enter learning rate: ");
+			double alpha = in.nextDouble();
+
+			System.out.print("Enter number of epochs: ");
+			int epochs = in.nextInt();
+			in.close();
+			trained = new Scanner(new File("files/dataset/results/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt"));
+			test = new Scanner(new File("files/dataset/testSet.txt"));
+			output = "files/dataset/results/outputDataset_"+nh+"_"+alpha+"_"+epochs+".txt";
+		}
 
 
         //read trained weights

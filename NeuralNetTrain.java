@@ -8,17 +8,21 @@ public class NeuralNetTrain{
 
    public static void main(String[] args) throws IOException, FileNotFoundException {
       Scanner in = new Scanner(System.in);
-
+      System.out.println("Neural Network Training Program");
       Scanner initial, train;
       String output;
       boolean valid = false;
-      //check for valid filename
 
-      initial = ScannerMethods.checkFile(in, 0);
-      train = ScannerMethods.checkFile(in, 1);
-      System.out.print("Enter output filename: ");
-      output = in.next(); //create a file with this name
-      in.close();
+      System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
+      int choice = in.nextInt();
+      if(choice == 1){
+        //check for valid filename
+        initial = ScannerMethods.checkFile(in, 0);
+        train = ScannerMethods.checkFile(in, 1);
+        System.out.print("Enter output filename: ");
+        output = in.next(); //create a file with this name
+        in.close();
+      }
 
       //wdbc
       //initial = new Scanner(new File("files/wdbc/sample.NNWDBC.init.txt"));
@@ -36,17 +40,21 @@ public class NeuralNetTrain{
       // train = new Scanner(new File("files/grades/grades.train.txt"));
       // output = "trainedGrades.txt";
 
+      else{
       //dataset testing
-      // System.out.println("Neural Network Training Program");
-      // System.out.print("Enter learning rate: ");
-      // ALPHA = in.nextDouble();
-      //
-      // System.out.print("Enter number of epochs: ");
-      // EPOCHS = in.nextInt();
-      // in.close();
-      // initial = new Scanner(new File("files/dataset/dataset.init.txt"));
-      // train = new Scanner(new File("files/dataset/trainingSet.txt"));
-      // output = "files/dataset/results/trainedDataset"+ALPHA+"_"+EPOCHS+".txt";
+        System.out.print("Enter number of hidden layers: ");
+        int nh = in.nextInt();
+        initial = initFile(in, nh);
+        System.out.print("Enter learning rate: ");
+        ALPHA = in.nextDouble();
+
+        System.out.print("Enter number of epochs: ");
+        EPOCHS = in.nextInt();
+        in.close();
+        train = new Scanner(new File("files/dataset/trainingSet.txt"));
+        output = "files/dataset/results/trainedDataset_"+nh+"_"+ALPHA+"_"+EPOCHS+".txt";
+    }
+
     //initialize neural network with initial weights read from file
       Network network = ScannerMethods.readWeights(initial);
 
@@ -209,7 +217,21 @@ public class NeuralNetTrain{
       double g = activationFunction(x);
       return g*(1.0-g);
    }
+   
+   public static Scanner initFile(Scanner in, int nh) throws FileNotFoundException, IOException{
+    //exit out for -1 or something
 
+      try{
+          Scanner sc = new Scanner(new File("files/dataset/dataset.init_"+nh+".txt"));
+          return sc;
+      }
+      catch(FileNotFoundException e){
+          System.out.println("Creating initial file...");
+          RandomFile.printInitialNetwork("files/dataset/dataset.init_"+nh+".txt",7,nh,3);
+          Scanner sc = new Scanner(new File("files/dataset/dataset.init_"+nh+".txt"));
+          return sc;
+      }
+   }
 
   //for trained neural network
    public static void printTrainedNetwork(Network network, String output) throws IOException {
