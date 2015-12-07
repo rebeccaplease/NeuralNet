@@ -5,25 +5,42 @@ public class NeuralNetTest{
 
 	public static void main(String[] args) throws IOException, FileNotFoundException {
 
-		//Scanner in = new Scanner(System.in);
+		Scanner in = new Scanner(System.in);
 
 		Scanner trained, test;
 		String output;
 		boolean valid = false;
+
 		//check for valid filename
 		System.out.println("Neural Network Testing Program");
-		// trained = ScannerMethods.checkFile(in, 2);
-		// test = ScannerMethods.checkFile(in, 3);
-		// System.out.print("Enter output filename: ");
-		// output = in.next(); //create a file with this name
-		// in.close();
+		trained = ScannerMethods.checkFile(in, 2);
+		test = ScannerMethods.checkFile(in, 3);
+		System.out.print("Enter output filename: ");
+		output = in.next(); //create a file with this name
+		in.close();
 
 		//full file
-		trained = new Scanner(new File("outputGrades.txt"));
-		test = new Scanner(new File("files/grades/grades.test.txt"));
+		//trained = new Scanner(new File("outputGrades.txt"));
+		//test = new Scanner(new File("files/grades/grades.test.txt"));
+		//output = "resultGrades.txt";
+
+		//grades
+		// trained = new Scanner(new File("trainedGrades.txt"));
+		// test = new Scanner(new File("files/grades/grades.test.txt"));
+		// output = "outputGrades.txt";
+
+		//dataset
+		// System.out.print("Enter learning rate: ");
+		// double alpha = in.nextDouble();
+		//
+		// System.out.print("Enter number of epochs: ");
+		// int epochs = in.nextInt();
+		// in.close();
+		// trained = new Scanner(new File("files/dataset/results/trainedDataset"+alpha+"_"+epochs+".txt"));
+		// test = new Scanner(new File("files/dataset/testSet.txt"));
+		// output = "files/dataset/results/outputDataset"+alpha+"_"+epochs+".txt";
 
 
-		output = "resultGrades.txt";
         //read trained weights
 		Network network = ScannerMethods.readWeights(trained);
 
@@ -125,12 +142,12 @@ public class NeuralNetTest{
 		accTotal = precisionTotal = recallTotal = 0;
 		int aTotal,bTotal,cTotal,dTotal;
 		aTotal = bTotal = cTotal = dTotal = 0;
-      //for each output class/category 
+      //for each output class/category
       //A B C D overallAccuracy Precision Recall F1
 		double no = network.outputLayer.length;
 		for(int i = 0; i < no; i++){
 			metrics[i].calculate();
-			
+
 			pw.print(metrics[i].abcd());
 
 			pw.print(metrics[i].values());

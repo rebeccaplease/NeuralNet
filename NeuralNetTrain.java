@@ -12,22 +12,41 @@ public class NeuralNetTrain{
       Scanner initial, train;
       String output;
       boolean valid = false;
-    //check for valid filename
-      System.out.println("Neural Network Training Program");
+      //check for valid filename
+
       initial = ScannerMethods.checkFile(in, 0);
       train = ScannerMethods.checkFile(in, 1);
       System.out.print("Enter output filename: ");
       output = in.next(); //create a file with this name
       in.close();
 
-      //initial = new Scanner(new File("files/sample.NNWDBC.init.txt"));
+      //wdbc
+      //initial = new Scanner(new File("files/wdbc/sample.NNWDBC.init.txt"));
+
       //mini file
-      //train = new Scanner(new File("files/mini/wdbc.mini_train.txt"));
+      //train = new Scanner(new File("files/wdbc/mini/wdbc.mini_train.txt"));
       //output = "outputMiniTrain.txt";
 
       //full file
-     // train = new Scanner(new File("files/wdbc.train.txt"));
+      //train = new Scanner(new File("files/wdbc/wdbc.train.txt"));
       //output = "outputTrain.txt";
+
+      //grades
+      // initial = new Scanner(new File("files/grades/sample.NNGrades.init.txt"));
+      // train = new Scanner(new File("files/grades/grades.train.txt"));
+      // output = "trainedGrades.txt";
+
+      //dataset testing
+      // System.out.println("Neural Network Training Program");
+      // System.out.print("Enter learning rate: ");
+      // ALPHA = in.nextDouble();
+      //
+      // System.out.print("Enter number of epochs: ");
+      // EPOCHS = in.nextInt();
+      // in.close();
+      // initial = new Scanner(new File("files/dataset/dataset.init.txt"));
+      // train = new Scanner(new File("files/dataset/trainingSet.txt"));
+      // output = "files/dataset/results/trainedDataset"+ALPHA+"_"+EPOCHS+".txt";
     //initialize neural network with initial weights read from file
       Network network = ScannerMethods.readWeights(initial);
 
@@ -43,7 +62,7 @@ public class NeuralNetTrain{
 
    }
 
-   
+
    public static void backPropLearning(Example[] examples, Network network){
     //repeat for 100 epochs instead of stopping condition
       for(int e = 0; e < EPOCHS; e++){
@@ -96,7 +115,7 @@ public class NeuralNetTrain{
                //   System.out.println("output: "+activationFunction(inj));
                // }
 
-  
+
             }
 
           //for each node in output layer
@@ -111,7 +130,7 @@ public class NeuralNetTrain{
                network.outputLayer[j].setInput(inj);
             //compute activation weight of jth hidden node in this layer
                network.outputLayer[j].setActivation(activationFunction(inj));
-        
+
             }
 
 
@@ -154,7 +173,7 @@ public class NeuralNetTrain{
             //       deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
             //     }
 
-                
+
             // }
 
 

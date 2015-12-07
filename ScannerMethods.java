@@ -44,7 +44,7 @@ public class ScannerMethods{
       Network network = new Network(ni+1, nh+1, no);
     //read weights from inputs to hidden node
       for(int k = 0; k < nh+1; k++){
-        
+
       //instantiate new hidden node
          network.hiddenLayer[k] = new Node(ni+1);
          for(int i = 0; i < ni+1; i++){
@@ -64,7 +64,7 @@ public class ScannerMethods{
       //instantiate new output node
          network.outputLayer[k] = new Node(nh+1);
          for(int i = 0; i < nh+1; i++){
-         //read inputs from input layer to current hidden node
+         //read inputs from hidden layer to current output node
             network.outputLayer[k].inputWeight[i] = sc.nextDouble();
          }
       }
