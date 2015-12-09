@@ -12,7 +12,10 @@ public class NeuralNetTest{
 		boolean valid = false;
 
 		System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
-		int choice = in.nextInt();
+		int choice = 0;
+		if(in.hasNextInt()){
+			choice = in.nextInt();
+		}
 		//check for valid filename
 		if(choice == 1){
 			trained = ScannerMethods.checkFile(in, 2);
@@ -36,11 +39,23 @@ public class NeuralNetTest{
 		else{
 			System.out.print("Enter number of hidden layers: ");
 			int nh = in.nextInt();
-			System.out.print("Enter learning rate: ");
-			double alpha = in.nextDouble();
 
 			System.out.print("Enter number of epochs: ");
+			while(!in.hasNextInt()){
+				System.out.println("Invalid input - please enter an integer.");
+				System.out.print("Enter number of epochs (integer): ");
+				in.next();
+			}
 			int epochs = in.nextInt();
+
+			System.out.print("Enter learning rate: ");
+			while(!in.hasNextDouble()){
+				System.out.println("Invalid input - please enter a decimal number.");
+				System.out.print("Enter learning rate (double): ");
+				in.next();
+			}
+			double alpha = in.nextDouble();
+
 			in.close();
 			trained = new Scanner(new File("files/dataset/results/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt"));
 			test = new Scanner(new File("files/dataset/testSet.txt"));

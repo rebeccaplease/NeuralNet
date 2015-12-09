@@ -2,9 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class NeuralNetTrain{
-   public static int EPOCHS = 100;
+   public static int EPOCHS = 1;
   //learning rate
-   public static double ALPHA = 0.05;
+   public static double ALPHA = 0.1;
 
    public static void main(String[] args) throws IOException, FileNotFoundException {
       Scanner in = new Scanner(System.in);
@@ -14,13 +14,36 @@ public class NeuralNetTrain{
       boolean valid = false;
 
       System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
-      int choice = in.nextInt();
+      int choice = 0;
+      if(in.hasNextInt()){
+        choice = in.nextInt();
+      }
+      //int choice = in.nextInt();
+
+      //try catch
       if(choice == 1){
         //check for valid filename
         initial = ScannerMethods.checkFile(in, 0);
         train = ScannerMethods.checkFile(in, 1);
         System.out.print("Enter output filename: ");
         output = in.next(); //create a file with this name
+
+        System.out.print("Enter number of epochs: ");
+        while(!in.hasNextInt()){
+          System.out.println("Invalid input - please enter an integer.");
+          System.out.print("Enter number of epochs (integer): ");
+          in.next();
+        }
+        EPOCHS = in.nextInt();
+
+        System.out.print("Enter learning rate: ");
+        while(!in.hasNextDouble()){
+          System.out.println("Invalid input - please enter a decimal number.");
+          System.out.print("Enter learning rate (double): ");
+          in.next();
+        }
+        ALPHA = in.nextDouble();
+
         in.close();
       }
 
@@ -45,11 +68,23 @@ public class NeuralNetTrain{
         System.out.print("Enter number of hidden layers: ");
         int nh = in.nextInt();
         initial = initFile(in, nh);
-        System.out.print("Enter learning rate: ");
-        ALPHA = in.nextDouble();
 
         System.out.print("Enter number of epochs: ");
+        while(!in.hasNextInt()){
+          System.out.println("Invalid input - please enter an integer.");
+          System.out.print("Enter number of epochs (integer): ");
+          in.next();
+        }
         EPOCHS = in.nextInt();
+
+        System.out.print("Enter learning rate: ");
+        while(!in.hasNextDouble()){
+          System.out.println("Invalid input - please enter a decimal number.");
+          System.out.print("Enter learning rate (double): ");
+          in.next();
+        }
+        ALPHA = in.nextDouble();
+
         in.close();
         train = new Scanner(new File("files/dataset/trainingSet.txt"));
         output = "files/dataset/results/trainedDataset_"+nh+"_"+ALPHA+"_"+EPOCHS+".txt";
@@ -151,9 +186,13 @@ public class NeuralNetTrain{
             for(int j = 0; j < network.outputLayer.length; j++) {
                deltaJ[j] = derivActivationFunction(network.outputLayer[j].input)*
                   (examples[k].output[j] - network.outputLayer[j].output);
-                  //****output[j]
                   // if(e == 0 && k == 0)
-                  //   System.out.println("deltaJ: " + deltaJ[j]);
+
+                  // System.out.println("input: "+network.outputLayer[j].input);
+                  // System.out.println("derivActivationFunction: "+ derivActivationFunction(network.outputLayer[j].input));
+                  // System.out.println("example output: "+ examples[k].output[j]);
+                  // System.out.println("activation: "+ network.outputLayer[j].output);
+                  // System.out.println("deltaJ: " + deltaJ[j]);
             }
 
             double[] deltaI = new double[network.hiddenLayer.length];
@@ -165,25 +204,14 @@ public class NeuralNetTrain{
                //loop through output layer error
                   err += network.outputLayer[j].inputWeight[i]*deltaJ[j];
                }
-               deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
+                deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
                // if(e == 0 && k == 0)
-               //      System.out.println("deltaI: " + deltaI[i]);
+                // System.out.println(i);
+                // System.out.println("input: "+network.hiddenLayer[i].input);
+                // System.out.println("derivActivationFunction: " + derivActivationFunction(network.hiddenLayer[i].input));
+                // System.out.println("activation: " + network.hiddenLayer[i].output);
+                // System.out.println("deltaI: " + deltaI[i]);
             }
-
-            // //hidden node error distribution
-            // for(int j = 0; j < network.outputLayer.length; j++){
-            //    double err = 0;
-            //    for(int i = 1; i < network.hiddenLayer.length; i++){
-            //    //loop through output layer error
-
-            //       err = network.outputLayer[j].inputWeight[i]*deltaJ[j];
-
-            //       deltaI[i] = derivActivationFunction(network.hiddenLayer[i].input)*err;
-            //     }
-
-
-            // }
-
 
           //update errors from deltaI and deltaJ for every weight
           //hidden to output layer
@@ -217,7 +245,7 @@ public class NeuralNetTrain{
       double g = activationFunction(x);
       return g*(1.0-g);
    }
-   
+
    public static Scanner initFile(Scanner in, int nh) throws FileNotFoundException, IOException{
     //exit out for -1 or something
 
