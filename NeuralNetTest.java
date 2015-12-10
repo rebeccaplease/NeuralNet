@@ -13,51 +13,55 @@ public class NeuralNetTest{
 	public static void main(String[] args) throws IOException, FileNotFoundException {
 
 		Scanner in = new Scanner(System.in);
-		System.out.println("Neural Network Testing Program");
+		System.out.println("---Neural Network Testing Program---");
 		Scanner trained, test;
 		String output;
 		boolean valid = false;
 
-		// System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
-		// int choice = 0;
-		// if(in.hasNextInt()){
-		// 	choice = in.nextInt();
-		// }
+		System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
+		int choice = 0;
+		if(in.hasNextInt()){
+			choice = in.nextInt();
+		}
+		else{
+			in.next();
+		}
 		//check for valid filename
-		//if(choice == 1){
+		if(choice == 1){
 			trained = ScannerMethods.checkFile(in, 2);
 			test = ScannerMethods.checkFile(in, 3);
 			System.out.print("Enter output filename: ");
 			output = in.next(); //create a file with this name
 			in.close();
-		//}
-		// //dataset
-		// else{
-		// 	System.out.print("Enter number of hidden layers: ");
-		// 	int nh = in.nextInt();
-		//
-		// 	System.out.print("Enter number of epochs: ");
-		// 	while(!in.hasNextInt()){
-		// 		System.out.println("Invalid input - please enter an integer.");
-		// 		System.out.print("Enter number of epochs (integer): ");
-		// 		in.next();
-		// 	}
-		// 	int epochs = in.nextInt();
-		//
-		// 	System.out.print("Enter learning rate: ");
-		// 	while(!in.hasNextDouble()){
-		// 		System.out.println("Invalid input - please enter a decimal number.");
-		// 		System.out.print("Enter learning rate (double): ");
-		// 		in.next();
-		// 	}
-		// 	double alpha = in.nextDouble();
-		//
-		// 	in.close();
-		// 	trained = new Scanner(new File("files/dataset/results/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt"));
-		// 	test = new Scanner(new File("files/dataset/testSet.txt"));
-		// 	output = "files/dataset/results/outputDataset_"+nh+"_"+alpha+"_"+epochs+".txt";
-		// }
+		}
+		//dataset
+		else{
+			System.out.print("Enter number of hidden nodes: ");
+			int nh = in.nextInt();
+			System.out.print("Enter number of output nodes: ");
+			int no = in.nextInt();
 
+			System.out.print("Enter number of epochs: ");
+			while(!in.hasNextInt()){
+				System.out.println("Invalid input - please enter an integer.");
+				System.out.print("Enter number of epochs (integer): ");
+				in.next();
+			}
+			int epochs = in.nextInt();
+
+			System.out.print("Enter learning rate: ");
+			while(!in.hasNextDouble()){
+				System.out.println("Invalid input - please enter a decimal number.");
+				System.out.print("Enter learning rate (double): ");
+				in.next();
+			}
+			double alpha = in.nextDouble();
+
+			in.close();
+			trained = new Scanner(new File("files/dataset/results_"+no+"/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt"));
+			test = new Scanner(new File("files/dataset/testSet_"+no+".txt"));
+			output = "files/dataset/results_"+no+"/outputDataset_"+nh+"_"+alpha+"_"+epochs+".txt";
+		}
 
     //read trained weights
 		Network network = ScannerMethods.readWeights(trained);
@@ -67,7 +71,7 @@ public class NeuralNetTest{
 
 		Metric[] metrics = testing(examples, network);
 
-		printResults(metrics, network, output);
+		printResults(metrics, output);
 	}
 
 	/**
@@ -99,8 +103,8 @@ public class NeuralNetTest{
 					network.inputLayer[i].output = examples[k].input[i-1];
 				}
 			}
-         //for each hidden layer (only 1 hidden layer)
-         //for(int l = 2; l < network.numLayers; l++){
+       //for each hidden layer (only 1 hidden layer)
+       //for(int l = 2; l < network.numLayers; l++){
 
       //for each node in hidden layer
 			for(int j = 1; j < network.hiddenLayer.length; j++){
@@ -186,8 +190,8 @@ public class NeuralNetTest{
 		aTotal = bTotal = cTotal = dTotal = 0;
       //for each output class/category
       //A B C D overallAccuracy Precision Recall F1
-
-		for(int i = 0; i < metrics.length; i++){
+		int no = metrics.length;
+		for(int i = 0; i < no; i++){
 			metrics[i].calculate();
 
 			pw.print(metrics[i].abcd());
