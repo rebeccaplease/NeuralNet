@@ -18,69 +18,29 @@ public class NeuralNetTrain{
       int epochs;
       double alpha;
 
-      System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
-      int choice = 0;
-      if(in.hasNextInt()){
-        choice = in.nextInt();
-      }
-      else{
+      //check for valid filename
+      initial = ScannerMethods.checkFile(in, 0);
+      train = ScannerMethods.checkFile(in, 1);
+      System.out.print("Enter output filename: ");
+      output = in.next(); //create a file with this name
+
+      System.out.print("Enter number of epochs: ");
+      while(!in.hasNextInt()){
+        System.out.println("Invalid input - please enter an integer.");
+        System.out.print("Enter number of epochs (integer): ");
         in.next();
       }
+      epochs = in.nextInt();
 
-      if(choice == 1){
-        //check for valid filename
-        initial = ScannerMethods.checkFile(in, 0);
-        train = ScannerMethods.checkFile(in, 1);
-        System.out.print("Enter output filename: ");
-        output = in.next(); //create a file with this name
+      System.out.print("Enter learning rate: ");
+      while(!in.hasNextDouble()){
+        System.out.println("Invalid input - please enter a decimal number.");
+        System.out.print("Enter learning rate (double): ");
+        in.next();
+      }
+       alpha = in.nextDouble();
 
-        System.out.print("Enter number of epochs: ");
-        while(!in.hasNextInt()){
-          System.out.println("Invalid input - please enter an integer.");
-          System.out.print("Enter number of epochs (integer): ");
-          in.next();
-        }
-        epochs = in.nextInt();
-
-        System.out.print("Enter learning rate: ");
-        while(!in.hasNextDouble()){
-          System.out.println("Invalid input - please enter a decimal number.");
-          System.out.print("Enter learning rate (double): ");
-          in.next();
-        }
-         alpha = in.nextDouble();
-
-        in.close();
-     }
-
-      else{
-      //dataset testing
-        System.out.print("Enter number of hidden nodes: ");
-        int nh = in.nextInt();
-        System.out.print("Enter number of output nodes: ");
-        int no = in.nextInt();
-        initial = initFile(in, nh, no);
-
-        System.out.print("Enter number of epochs: ");
-        while(!in.hasNextInt()){
-          System.out.println("Invalid input - please enter an integer.");
-          System.out.print("Enter number of epochs (integer): ");
-          in.next();
-        }
-        epochs = in.nextInt();
-
-        System.out.print("Enter learning rate: ");
-        while(!in.hasNextDouble()){
-          System.out.println("Invalid input - please enter a decimal number.");
-          System.out.print("Enter learning rate (double): ");
-          in.next();
-        }
-        alpha = in.nextDouble();
-
-        in.close();
-        train = new Scanner(new File("files/dataset/trainingSet_"+no+".txt"));
-        output = "files/dataset/results_"+no+"/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt";
-    }
+      in.close();
 
     //initialize neural network with initial weights read from file
       Network network = ScannerMethods.readWeights(initial);
@@ -255,30 +215,5 @@ public class NeuralNetTrain{
          pw.println();
       }
       pw.close();
-   }
-
-   /**
-    * Returns a Scanner with the inital file.  If the initial file with the
-    * correct parameters nh and no does not exist, creates a new random file.
-    *
-    * @param    in  Scanner to be initialized
-    * @param    nh  number of hidden nodes
-    * @param    no  number of output nodes
-    * @return   initialized Scanner
-    */
-   public static Scanner initFile(Scanner in, int nh, int no)
-      throws FileNotFoundException, IOException{
-    //exit out for -1 or something
-
-      try{
-          Scanner sc = new Scanner(new File("files/dataset/dataset.init_"+nh+"_"+no+".txt"));
-          return sc;
-      }
-      catch(FileNotFoundException e){
-          System.out.println("Creating initial file...");
-          RandomFile.printInitialNetwork("files/dataset/dataset.init_"+nh+"_"+no+".txt",7,nh,no);
-          Scanner sc = new Scanner(new File("files/dataset/dataset.init_"+nh+"_"+no+".txt"));
-          return sc;
-      }
    }
 }

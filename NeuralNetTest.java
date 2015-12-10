@@ -18,50 +18,11 @@ public class NeuralNetTest{
 		String output;
 		boolean valid = false;
 
-		System.out.println("Enter 1 for inputting your own filename. Anything else for dataset training.");
-		int choice = 0;
-		if(in.hasNextInt()){
-			choice = in.nextInt();
-		}
-		else{
-			in.next();
-		}
-		//check for valid filename
-		if(choice == 1){
-			trained = ScannerMethods.checkFile(in, 2);
-			test = ScannerMethods.checkFile(in, 3);
-			System.out.print("Enter output filename: ");
-			output = in.next(); //create a file with this name
-			in.close();
-		}
-		//dataset
-		else{
-			System.out.print("Enter number of hidden nodes: ");
-			int nh = in.nextInt();
-			System.out.print("Enter number of output nodes: ");
-			int no = in.nextInt();
-
-			System.out.print("Enter number of epochs: ");
-			while(!in.hasNextInt()){
-				System.out.println("Invalid input - please enter an integer.");
-				System.out.print("Enter number of epochs (integer): ");
-				in.next();
-			}
-			int epochs = in.nextInt();
-
-			System.out.print("Enter learning rate: ");
-			while(!in.hasNextDouble()){
-				System.out.println("Invalid input - please enter a decimal number.");
-				System.out.print("Enter learning rate (double): ");
-				in.next();
-			}
-			double alpha = in.nextDouble();
-
-			in.close();
-			trained = new Scanner(new File("files/dataset/results_"+no+"/trainedDataset_"+nh+"_"+alpha+"_"+epochs+".txt"));
-			test = new Scanner(new File("files/dataset/testSet_"+no+".txt"));
-			output = "files/dataset/results_"+no+"/outputDataset_"+nh+"_"+alpha+"_"+epochs+".txt";
-		}
+		trained = ScannerMethods.checkFile(in, 2);
+		test = ScannerMethods.checkFile(in, 3);
+		System.out.print("Enter output filename: ");
+		output = in.next(); //create a file with this name
+		in.close();
 
     //read trained weights
 		Network network = ScannerMethods.readWeights(trained);
