@@ -1,6 +1,10 @@
+/**
+ * For storing training and testing examples. Arrays for inputs and outputs.
+ *
+ */
 public class Example {
    double[] input;
-   double[] output; //activation 
+   double[] output;
 
    public Example(int ni, int no) {
       input = new double[ni];

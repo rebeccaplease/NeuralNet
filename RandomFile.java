@@ -1,13 +1,21 @@
 import java.io.*;
 import java.util.*;
 
-//print random weights
+/**
+ * Creates a files of random weights for an initial neural network [0,1] with
+ * one hidden layer.
+ *
+ * Prompts user for number of initial, hidden, and output nodes.
+ * Prompts for output text file name.
+ *
+ * Prints a text file of the pseudo random initial neural network.
+ */
 public class RandomFile{
 	public static void main(String[] args) throws IOException, FileNotFoundException {
       Scanner in = new Scanner(System.in);
       int ni, nh, no;
       String output;
- 
+
       System.out.println("Generate pseudo random weights for initial neural network with one hidden layer");
       System.out.print("Enter the number of initial nodes: ");
       while(!in.hasNextInt()){
@@ -32,7 +40,7 @@ public class RandomFile{
          in.next();
       }
       no = in.nextInt();
-   
+
       System.out.print("Enter output filename: ");
       output = in.next(); //create a file with this name
       in.close();

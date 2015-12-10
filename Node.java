@@ -1,10 +1,13 @@
+/**
+ * For holding parameters for each node.
+ */
 public class Node {
    double[] inputWeight;
-   double output; //activation 
+   double output; //activation
    double input = 0;
    public Node (){
-
    }
+
    public Node(int numWeights) {
       inputWeight = new double[numWeights];
    }

@@ -1,3 +1,8 @@
+/**
+ * For holding metrics in the testing program for each output node
+ * and calculating overall accuracy, precision, recall, and f1.
+ *
+ */
 public class Metric {
 	double a,b,c,d;
 	double overallAccuracy,precision,recall,f1;
@@ -39,6 +44,4 @@ public class Metric {
 		//System.out.println(s);
 		return s;
 	}
-
-
 }

@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.*;
-
+/**
+ * Methods for checking for file existence, reading in initial network weights,
+ * and reading in example data for training and testing.
+ */
 public class ScannerMethods{
 	 //check for valid filename input
    public static Scanner checkFile(Scanner in, int type) throws FileNotFoundException{
